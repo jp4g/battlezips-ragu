@@ -1,0 +1,17 @@
+[package]
+name = "wasm-bench"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+battlezips = { path = "../battlezips", default-features = false }
+ragu_pcd.workspace = true
+ragu_core.workspace = true
+ragu_circuits.workspace = true
+rand.workspace = true

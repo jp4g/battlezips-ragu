@@ -11,8 +11,9 @@ This is the next entry in the BattleZips series
 the same thing: a player committed to a valid fleet, and every shot they answer
 is honestly reported as a hit or a miss.
 
-> **Status: exploration / design.** No circuit code yet. Read the docs below,
-> then [PLAN.md](PLAN.md) for the roadmap.
+> **Status:** Phase 1 done. Ragu builds and proves natively and in wasm. See
+> [docs/05-benchmarks.md](docs/05-benchmarks.md). Battleship circuits are next.
+> Roadmap: [PLAN.md](PLAN.md).
 
 ## Goal of the first proof of concept
 
@@ -34,6 +35,7 @@ Smart contracts and a full game-state PCD chain come later.
 | [docs/02-ragu-primer.md](docs/02-ragu-primer.md) | Ragu concepts that matter here, its limits, and open risks (**including zero-knowledge**) |
 | [docs/03-circuit-design.md](docs/03-circuit-design.md) | Proposed board and shot steps, with gate budgets |
 | [docs/04-architecture.md](docs/04-architecture.md) | PCD graph, message protocol, and web app layout |
+| [docs/05-benchmarks.md](docs/05-benchmarks.md) | Native and wasm timings, proof sizes |
 | [PLAN.md](PLAN.md) | Phased roadmap and open questions |
 
 ## Important caveat
@@ -53,7 +55,12 @@ game, until upstream lands hiding. See
 | BattleZips/BattleZips-Halo2 | `419d8c9` |
 | BattleZips/BattleZips-Noir | `99beb27` |
 
-Ragu needs Rust **1.97.1** (pinned in its `rust-toolchain.toml`).
+Ragu needs Rust **1.97.1**, pinned here in `rust-toolchain.toml`. Ragu is tracked on
+`main` and pinned by `Cargo.lock`.
+
+```sh
+cargo run --release --example smoke     # native smoke test + timings
+```
 
 ## License
 

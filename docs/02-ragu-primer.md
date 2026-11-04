@@ -104,10 +104,10 @@ What this means for the demo:
 | Item | Notes |
 | --- | --- |
 | Rust 1.97.1 | Pinned by `rust-toolchain.toml`. Edition 2024. |
-| WASM | Library crates are `no_std` + `alloc`, so `wasm32-unknown-unknown` should be achievable. Not yet built. `multicore` needs threads (`wasm-bindgen-rayon` + COOP/COEP headers) or must be turned off. |
-| Browser proving time | Native: ~350 ms per seed, ~200 ms per fuse, plus compression (not yet measured). WASM single-threaded is likely several times slower. Must measure. |
-| Proof sizes | Uncompressed is large (it carries polynomials). Compressed is "orders of magnitude smaller". Exact bytes at `R<13>` with `HEADER_SIZE = 4` are not yet measured. |
+| WASM | ✅ Builds for `wasm32-unknown-unknown` unchanged (no `multicore`). ~4.6× slower than native single-threaded because field multiplication emulates `u128` products. See [05-benchmarks.md](05-benchmarks.md). |
+| Browser proving time | ✅ Measured: WASM fuse 5.6 s, compress 3.7 s, verify 0.9 s (M4 Max, V8). |
+| Proof sizes | ✅ Uncompressed 23 MiB, compressed 7,264 B. |
 | Baked generators | The `baked` feature embeds 2¹³ generators per curve in the binary. This affects WASM bundle size. |
 | API churn | 3,000+ commits and active (`pushed_at` today). Pin a commit and use a git dependency. Crates.io `0.1` (used in the book) may lag `main`. |
-| Multi-element headers | Book examples use a single `Element`. We need 3–4 elements per header (tuple or `FixedVec`-style gadget, see `ragu_primitives::vec`). Confirm the `Kind!` form. |
+| Multi-element headers | ✅ Upstream uses tuples: `Kind![Fp; (Element<'_, _>, Element<'_, _>)]`. |
 | Unit right child for fuse | A step with `Left = Board`, `Right = ()` needs a `Pcd<()>`. `app.bootstrap_proof().clone().carry(())` should work. Confirm it is accepted as an ordinary child. |

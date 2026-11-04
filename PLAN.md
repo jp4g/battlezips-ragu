@@ -9,23 +9,23 @@ numbers in `docs/`.
 - [x] Read Ragu's book and API ([docs/02](docs/02-ragu-primer.md))
 - [x] Draft circuit and architecture designs ([docs/03](docs/03-circuit-design.md), [docs/04](docs/04-architecture.md))
 
-## Phase 1: Ragu hello-world + toolchain
+## Phase 1: Ragu hello-world + toolchain ✅
 
-- [ ] Pin Rust 1.97.1 (`rust-toolchain.toml`) and add `wasm32-unknown-unknown`
-- [ ] Cargo workspace with `crates/battlezips` depending on Ragu at `3219e086` (git)
-- [ ] Port the book's Merkle example as a smoke test (seed, fuse, compress, verify)
-- [ ] Measure natively: seed, fuse, compress, verify times; compressed and uncompressed proof byte sizes
-- [ ] Build the same smoke test for `wasm32-unknown-unknown` (no `multicore`); record bundle size and timings in a browser
-- [ ] Confirm the multi-element `Header::Output` form and the unit right child (`bootstrap_proof().carry(())`)
+- [x] Pin Rust 1.97.1 (`rust-toolchain.toml`) with `wasm32-unknown-unknown`
+- [x] Cargo workspace with `crates/battlezips` tracking Ragu `main` (git; `Cargo.lock` pins `3219e086`)
+- [x] Smoke app: seed, fuse, compress, verify, plus byte round-trip and wrong-header rejection
+- [x] Native timings and proof sizes
+- [x] wasm32 build with no source changes; timings under Node/V8 (`crates/wasm-bench`)
+- [x] Multi-element headers: tuple `Kind![Fp; (Element, Element, ..)]` is used upstream
 
-**Exit:** a numbers table in `docs/05-benchmarks.md`, and a go/no-go on in-browser proving.
+**Result ([docs/05](docs/05-benchmarks.md)):** go. 7.3 KB compressed proofs, about 9.4 s per answered shot in single-threaded wasm, and 0.9 s to verify. Speedup work is tracked in Phase 3.
 
 ## Phase 2: Circuits
 
 - [ ] Placement masks: generate the 760 placement masks (const or `build.rs`), with unit tests
 - [ ] Native reference: `Board`, `commit(board, salt)`, `shot(board, i)`
 - [ ] `BoardHeader`, `BoardStep`; measure real gate count with the metrics driver
-- [ ] `ShotHeader`, `ShotStep`
+- [ ] `ShotHeader`, `ShotStep` (confirm unit right child via `bootstrap_proof().clone().carry(())`)
 - [ ] Negative tests: overlapping ships, off-board placement, wrong hit flag, wrong salt, mismatched commitment, two-hot shot selector
 - [ ] CLI demo: two in-process players play a full game with compressed proofs passed as bytes
 
@@ -38,6 +38,8 @@ numbers in `docs/`.
 - [ ] `relay/`: two-player room WebSocket relay
 - [ ] `web/`: fleet placement UI, opponent grid, proving worker, proof status/log panel
 - [ ] Two-browser playthrough
+- [ ] Browser threads via `wasm-bindgen-rayon` (COOP/COEP) + Ragu `multicore`
+- [ ] Open an upstream issue: wasm32 field kernel (64-bit limbs × `u128` products are emulated; ~4.6× slower than native 1-thread)
 
 **Exit:** two people can play a full game across machines.
 
@@ -52,10 +54,8 @@ numbers in `docs/`.
 
 1. **Zero knowledge.** Is a non-hiding demo acceptable for v1? Should the UI say
    "not private" explicitly? (Recommendation: yes, show a banner.)
-2. **Browser feasibility.** If WASM fuse + compress is too slow (more than ~10 s
-   per turn), fall back to a native prover sidecar, or an in-relay prover for the demo only?
-3. **Ragu version.** Track `main` with a pinned rev and bump deliberately, or
-   wait for a tagged release?
+2. ~~Browser feasibility~~: proving runs in the browser (~9.4 s per turn single-threaded). Make it faster rather than fall back.
+3. ~~Ragu version~~: track `main`, pinned by `Cargo.lock`.
 4. **Header binding.** Add a session id to `ShotHeader` to bind proofs to one
    game? (Cheap: one element, and `HEADER_SIZE = 4` has room.)
 5. **Relay.** Rust (axum, to share types) or a ~50-line Node/Bun relay?
